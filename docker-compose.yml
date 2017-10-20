@@ -1,0 +1,30 @@
+version: '2'
+services:
+  php:
+      build: ./docker/php-fpm
+      container_name: test_php
+      working_dir: /project
+      volumes:
+          - ./:/project
+
+  mysql:
+      image: percona/percona-server
+      container_name: test_mysql
+      working_dir: /project
+      ports:
+        - 3306:3306
+      environment:
+          MYSQL_ROOT_PASSWORD: test
+
+  nginx:
+      image: nginx:latest
+      container_name: test_nginx
+      working_dir: /project
+      ports:
+        - "8080:80"
+      volumes:
+        - ./:/project
+        - ./docker/nginx/site.conf:/etc/nginx/conf.d/site.conf
+      links:
+        - php
+        - mysql
